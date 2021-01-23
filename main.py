@@ -1,16 +1,22 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+FIG_IM_ST = {}
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+class Figure:
+    def __init__(self, x, y):
+        self.pos = self.x, self.y = x, y
+        self.is_ded = False
+
+    def get_im_st(self):
+        return FIG_IM_ST[self.__class__]
+
+    def get_step_pos(self):
+        return None
+
+    def ded(self):
+        self.is_ded = True
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+class Bord:
+    pass
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
