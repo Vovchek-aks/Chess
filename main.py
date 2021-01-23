@@ -35,12 +35,6 @@ class Pawn(Figure):
                 (self.x + 1, y))
 
 
-class Rook(StepAttack):
-    def get_step_pos(self):
-        return tuple([(self.x, self.y + i) for i in range(-7, 8) if i != 0] +
-                     [(self.x + i, self.y) for i in range(-7, 8) if i != 0])
-
-
 class Knight(StepAttack):
     def get_step_pos(self):
         return ((self.x - 1, self.y - 2),
@@ -54,6 +48,12 @@ class Knight(StepAttack):
 
                 (self.x - 2, self.y - 1),
                 (self.x - 2, self.y + 1))
+
+
+class Rook(StepAttack):
+    def get_step_pos(self):
+        return tuple([(self.x, self.y + i) for i in range(-7, 8) if i != 0] +
+                     [(self.x + i, self.y) for i in range(-7, 8) if i != 0])
 
 
 class Bishop(StepAttack):
