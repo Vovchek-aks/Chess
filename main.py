@@ -10,6 +10,12 @@ class Figure:
     def get_im_st(self):
         return FIG_IM_ST[self.__class__]
 
+    def __str__(self):
+        return str((self.__class__.__name__, self.pos, self.color))
+
+    def __repr__(self):
+        return self.__str__()
+
     def get_step_pos(self, bord: set):
         return set()
 
@@ -25,12 +31,17 @@ class StepAttack(Figure):
         return self.get_step_pos(bord)
 
 
+class EmptyF(StepAttack):
+    def get_step_pos(self, bord: set):
+        return set()
+
+
 class Pawn(Figure):
     def get_step_pos(self, bord: set):
-        return {(self.x, self.y - self.color)} & bord
+        return {(self.x, self.y + self.color)} & bord
 
     def get_attack_pos(self, bord: set):
-        y = self.get_step_pos(bord).pop()[1]
+        y = self.y + self.color
         return {(self.x - 1, y),
                 (self.x + 1, y)} & bord
 
@@ -76,7 +87,19 @@ class King(StepAttack):
 
 
 class Bord:
-    pass
+    def __init__(self):
+        sp = [Rook, Knight, Bishop, King, Queen, Bishop, Knight, Rook]
+
+        self.grid = [[sp[x](x, 0, 1) for x in range(len(sp))]] + \
+                    [[Pawn(x, 1, 1) for x in range(8)]] + \
+                    [[EmptyF(x, y, 0) for x in range(8)] for y in range(2, 6)] + \
+                    [[Pawn(x, 6, -1) for x in range(8)]] + \
+                    [[sp[x](x, 7, -1) for x in range(len(sp))]]
 
 
 
+
+
+
+
+# print(*Bord().grid, sep='\n')
