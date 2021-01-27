@@ -44,12 +44,16 @@ class EmptyF(StepAttack):
 
 class Pawn(Figure):
     def get_step_pos(self, bord):
-        return {(self.x, self.y + self.color)[::-1]} & bord.b_get_free()
+        r = {(self.x, self.y + self.color)[::-1]} & bord.b_get_free()
+        if self.color == 1 and self.y == 1 or \
+           self.color == -1 and self.y == 6:
+            r |= {(self.x, self.y + self.color * 2)[::-1]} & bord.b_get_free()
+        return r
 
     def get_attack_pos(self, bord):
         y = self.y + self.color
         return {(self.x - 1, y)[::-1],
-                (self.x + 1, y)[::-1]} & bord.b_get_all(self.color)
+                (self.x + 1, y)[::-1]} & bord.b_get_busy(self.color)
 
 
 class Knight(StepAttack):
@@ -72,7 +76,7 @@ class Rook(StepAttack):
         r = set()
         f = bord.b_get_free()
         b = bord.b_get_busy(self.color)
-        ssum = lambda x, y, z: tuple([(x[g] + y[g]) * z for g in range(len(x))])
+        ssum = lambda x, y, z: tuple([x[g] + y[g] * z for g in range(len(x))])
         for p in [[1, 0], [0, 1], [0, -1], [-1, 0]]:
             for i in range(8):
                 s = ssum(self.pos, p, i + 1)
@@ -91,7 +95,7 @@ class Bishop(StepAttack):
         r = set()
         f = bord.b_get_free()
         b = bord.b_get_busy(self.color)
-        ssum = lambda x, y, z: tuple([(x[g] + y[g]) * z for g in range(len(x))])
+        ssum = lambda x, y, z: tuple([x[g] + y[g] * z for g in range(len(x))])
         for p in [[1, 1], [-1, 1], [1, -1], [-1, -1]]:
             for i in range(8):
                 s = ssum(self.pos, p, i + 1)
@@ -107,7 +111,7 @@ class Bishop(StepAttack):
 
 class Queen(StepAttack):
     def get_step_pos(self, bord):
-        return Bishop(*self.pos, self.color).get_attack_pos(bord) | Rook(*self.pos, self.color).get_attack_pos(bord)
+        return Bishop(*self.pos[::-1], self.color).go_pos(bord) | Rook(*self.pos[::-1], self.color).go_pos(bord)
 
 
 class King(StepAttack):
@@ -154,4 +158,13 @@ class Bord:
 
 b = Bord()
 
-print(b.grid[0][4].go_pos(b))
+g = b.grid[6][1].go_pos(b)
+
+for i in range(8):
+    for j in range(8):
+        if (i, j) in g:
+            print('#', end='  ')
+        else:
+            print('-', end='  ')
+    print()
+
