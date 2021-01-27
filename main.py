@@ -4,14 +4,11 @@ class Figure:
         self.is_ded = False
         self.color = color
 
-    def get_im_st(self):
-        return FIG_IM_ST.get((self.__class__, self.color), '@')
-
     def __str__(self):
         return str((self.__class__.__name__, self.pos, self.color))
 
     def __repr__(self):
-        return self.get_im_st()
+        return self.__str__()
 
     def get_step_pos(self, bord):
         return set()
@@ -152,6 +149,36 @@ class Bord:
     def b_get_all(self, color):
         return self.b_get_free() | self.b_get_busy(color)
 
+    def draw(self):
+        print('\t' + '\t'.join([str(i + 1) for i in range(8)]))
+        for i in range(8):
+            print(i + 1, end='\t')
+            for j in range(8):
+                f = self.grid[i][j]
+                print(FIG_IM_ST.get((f.__class__, f.color)), end='\t')
+            print()
+
+    def step(self, color, y, x, yy, xx):
+        f = self.grid[y][x]
+        if (yy, xx) in f.go_pos(self) and f.color == color:
+            self.grid[yy][xx] = f.__class__(xx, yy, f.color)
+            self.grid[y][x] = EmptyF(x, y, 0)
+            return True
+        return False
+
+    def is_win(self, color):
+        k = set()
+        for i in self:
+            if i.__class__ == King and i.color == -color:
+                k = {i.pos} | i.go_pos(self)
+                break
+        all_pos = set()
+        for i in self:
+            if i.color == color:
+                all_pos |= i.go_pos(self)
+
+        return k == k & all_pos and k != set()
+
 
 FIG_IM_ST = {
     (Pawn, 1): '♟',
@@ -170,17 +197,51 @@ FIG_IM_ST = {
 }
 
 
-b = Bord()
+class Game:
+    def __init__(self):
+        self.bord = Bord()
+        self.color = 1
 
-g = b.grid[6][1].go_pos(b)
+    def do_step(self):
+        print(f'Ходит {"белый" if self.color == 1 else "чёрный"}')
+        print('Введите 4 числа (1-2 - координаты фигуры, 3-4 - координаты хода) через пробел')
+        print('Пример: y1 x1 y2 x2')
+        try:
+            return [int(i) for i in input().split()]
+        except Exception:
+            return False
 
-print(*[i.__repr__() for i in b])
+    def do_game(self):
+        while True:
+            print('\n' * 32)
+            self.bord.draw()
 
-# for i in range(8):
-#     for j in range(8):
-#         if (i, j) in g:
-#             print('#', end='  ')
-#         else:
-#             print('-', end='  ')
-#     print()
+            if self.bord.is_win(-self.color):
+                s = self.do_step()
+                while not s or len(s) != 4:
+                    print('Ошибка')
+                    s = self.do_step()
+
+                h = self.bord.step(self.color, *s)
+                while not h:
+                    print('Невозможный ход')
+
+                    s = self.do_step()
+                    while not s or len(s) != 4:
+                        print('Ошибка')
+                        s = self.do_step()
+
+                    h = self.bord.step(self.color, *s)
+
+                self.color *= -1
+            else:
+                print(f'Победил {"белый" if -self.color == 1 else "чёрный"}')
+                return
+
+
+if __name__ == '__main__':
+    Game().do_game()
+
+
+
 
