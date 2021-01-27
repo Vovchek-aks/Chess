@@ -1,6 +1,3 @@
-FIG_IM_ST = {}
-
-
 class Figure:
     def __init__(self, x, y, color):
         self.pos = self.y, self.x = y, x
@@ -8,13 +5,13 @@ class Figure:
         self.color = color
 
     def get_im_st(self):
-        return FIG_IM_ST.get(self.__class__, '@')
+        return FIG_IM_ST.get((self.__class__, self.color), '@')
 
     def __str__(self):
         return str((self.__class__.__name__, self.pos, self.color))
 
     def __repr__(self):
-        return self.__str__()
+        return self.get_im_st()
 
     def get_step_pos(self, bord):
         return set()
@@ -156,15 +153,34 @@ class Bord:
         return self.b_get_free() | self.b_get_busy(color)
 
 
+FIG_IM_ST = {
+    (Pawn, 1): '♟',
+    (Pawn, -1): '♙',
+    (Rook, 1): '♜',
+    (Rook, -1): '♖',
+    (Knight, 1): '♞',
+    (Knight, -1): '♘',
+    (Bishop, 1): '♝',
+    (Bishop, -1): '♗',
+    (King, 1): '♛',
+    (King, -1): '♕',
+    (Queen, 1): '♚',
+    (Queen, -1): '♔',
+    (EmptyF, 0): '-'
+}
+
+
 b = Bord()
 
 g = b.grid[6][1].go_pos(b)
 
-for i in range(8):
-    for j in range(8):
-        if (i, j) in g:
-            print('#', end='  ')
-        else:
-            print('-', end='  ')
-    print()
+print(*[i.__repr__() for i in b])
+
+# for i in range(8):
+#     for j in range(8):
+#         if (i, j) in g:
+#             print('#', end='  ')
+#         else:
+#             print('-', end='  ')
+#     print()
 
