@@ -205,9 +205,6 @@ class Game:
             return False
 
     def do_game(self):
-        self.bord.grid[1][2] = Pawn(2, 1, -1)
-        self.bord.grid[2][1] = Pawn(1, 2, -1)
-
         while True:
             print('\n' * 32)
             self.bord.draw()
