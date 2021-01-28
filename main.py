@@ -207,7 +207,7 @@ class Game:
         print('Введите 4 числа (1-2 - координаты фигуры, 3-4 - координаты хода) через пробел')
         print('Пример: y1 x1 y2 x2')
         try:
-            return [int(i) for i in input().split()]
+            return [int(i) - 1 for i in input().split()]
         except Exception:
             return False
 
@@ -216,7 +216,7 @@ class Game:
             print('\n' * 32)
             self.bord.draw()
 
-            if self.bord.is_win(-self.color):
+            if not self.bord.is_win(-self.color):
                 s = self.do_step()
                 while not s or len(s) != 4:
                     print('Ошибка')
