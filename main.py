@@ -167,17 +167,10 @@ class Bord:
         return False
 
     def is_win(self, color):
-        k = set()
         for i in self:
             if i.__class__ == King and i.color == -color:
-                k = {i.pos} | i.go_pos(self)
-                break
-        all_pos = set()
-        for i in self:
-            if i.color == color:
-                all_pos |= i.go_pos(self)
-
-        return k == k & all_pos and k != set()
+                return False
+        return True
 
 
 FIG_IM_ST = {
@@ -212,6 +205,9 @@ class Game:
             return False
 
     def do_game(self):
+        self.bord.grid[1][2] = Pawn(2, 1, -1)
+        self.bord.grid[2][1] = Pawn(1, 2, -1)
+
         while True:
             print('\n' * 32)
             self.bord.draw()
@@ -242,6 +238,9 @@ class Game:
 
 if __name__ == '__main__':
     Game().do_game()
+
+    while True:
+        input()
 
 
 
