@@ -173,23 +173,6 @@ class Bord:
         return True
 
 
-FIG_IM_ST = {
-    (Pawn, 1): '♟',
-    (Pawn, -1): '♙',
-    (Rook, 1): '♜',
-    (Rook, -1): '♖',
-    (Knight, 1): '♞',
-    (Knight, -1): '♘',
-    (Bishop, 1): '♝',
-    (Bishop, -1): '♗',
-    (King, 1): '♛',
-    (King, -1): '♕',
-    (Queen, 1): '♚',
-    (Queen, -1): '♔',
-    (EmptyF, 0): '-'
-}
-
-
 class Game:
     def __init__(self):
         self.bord = Bord()
@@ -231,6 +214,23 @@ class Game:
             else:
                 print(f'Победил {"белый" if -self.color == 1 else "чёрный"}')
                 return
+
+
+FIG_IM_ST = {
+    (Pawn, 1): '♟',
+    (Pawn, -1): '♙',
+    (Rook, 1): '♜',
+    (Rook, -1): '♖',
+    (Knight, 1): '♞',
+    (Knight, -1): '♘',
+    (Bishop, 1): '♝',
+    (Bishop, -1): '♗',
+    (King, 1): '♛',
+    (King, -1): '♕',
+    (Queen, 1): '♚',
+    (Queen, -1): '♔',
+    (EmptyF, 0): '-'
+}
 
 
 if __name__ == '__main__':
