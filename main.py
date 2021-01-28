@@ -205,7 +205,7 @@ class Game:
     def do_step(self):
         print(f'Ходит {"белый" if self.color == 1 else "чёрный"}')
         print('Введите 4 числа (1-2 - координаты фигуры, 3-4 - координаты хода) через пробел')
-        print('Пример: y1 x1 y2 x2')
+        print('Пример: x1 y1 x2 y2 \n')
         try:
             return [int(i) - 1 for i in input().split()]
         except Exception:
@@ -218,6 +218,7 @@ class Game:
 
             if not self.bord.is_win(-self.color):
                 s = self.do_step()
+                s = [s[1]] + [s[0]] + [s[3]] + [s[2]]
                 while not s or len(s) != 4:
                     print('Ошибка')
                     s = self.do_step()
