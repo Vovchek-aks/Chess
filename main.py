@@ -1,3 +1,6 @@
+from random import randint
+
+
 class Figure:
     def __init__(self, x, y, color):
         self.pos = self.y, self.x = y, x
@@ -40,7 +43,7 @@ class Pawn(Figure):
     def get_step_pos(self, bord):
         r = {(self.x, self.y + self.color)[::-1]} & bord.b_get_free()
         if self.color == 1 and self.y == 1 or \
-           self.color == -1 and self.y == 6:
+                self.color == -1 and self.y == 6:
             r |= {(self.x, self.y + self.color * 2)[::-1]} & bord.b_get_free()
         return r
 
@@ -120,11 +123,19 @@ class Bord:
     def __init__(self):
         sp = [Rook, Knight, Bishop, King, Queen, Bishop, Knight, Rook]
 
+        self.lose = {
+            +1: [Queen],
+            -1: []
+        }
+
         self.grid = [[sp[x](x, 0, 1) for x in range(len(sp))]] + \
                     [[Pawn(x, 1, 1) for x in range(8)]] + \
                     [[EmptyF(x, y) for x in range(8)] for y in range(2, 6)] + \
-                    [[Pawn(x, 6, -1) for x in range(8)]] + \
-                    [[sp[x](x, 7, -1) for x in range(len(sp))]]
+                    [[EmptyF(x, 6, -1) for x in range(8)]] + \
+                    [[EmptyF(x, 7, -1) for x in range(8)]]
+                    # [[sp[x](x, 7, -1) for x in range(len(sp))]]
+
+        self.grid[6][0] = Pawn(0, 7, 1)
 
     def __getitem__(self, item):
         r = []
@@ -159,10 +170,17 @@ class Bord:
             print()
 
     def step(self, color, y, x, yy, xx):
-        f = self.grid[y][x]
-        if (yy, xx) in f.go_pos(self) and f.color == color:
-            self.grid[yy][xx] = f.__class__(xx, yy, f.color)
+        if (yy, xx) in self.grid[y][x].go_pos(self) and self.grid[y][x].color == color:
+            if self.grid[yy][xx].__class__ not in {Pawn, EmptyF}:
+                self.lose[-color] += [self.grid[yy][xx].__class__]
+
+            self.grid[yy][xx] = self.grid[y][x].__class__(xx, yy, self.grid[y][x].color)
             self.grid[y][x] = EmptyF(x, y, 0)
+
+            if (yy == 0 and color == -1 or yy == 7 and color == 1) and self.grid[yy][xx].__class__ == Pawn:
+                self.grid[yy][xx] = self.lose[color].pop(
+                    randint(0, len(self.lose[color])))(xx, yy, self.grid[y][x].color)
+
             return True
         return False
 
@@ -232,13 +250,8 @@ FIG_IM_ST = {
     (EmptyF, 0): '-'
 }
 
-
 if __name__ == '__main__':
     Game().do_game()
 
     while True:
         input()
-
-
-
-
