@@ -124,18 +124,15 @@ class Bord:
         sp = [Rook, Knight, Bishop, King, Queen, Bishop, Knight, Rook]
 
         self.lose = {
-            +1: [Queen],
+            +1: [],
             -1: []
         }
 
         self.grid = [[sp[x](x, 0, 1) for x in range(len(sp))]] + \
                     [[Pawn(x, 1, 1) for x in range(8)]] + \
                     [[EmptyF(x, y) for x in range(8)] for y in range(2, 6)] + \
-                    [[EmptyF(x, 6, -1) for x in range(8)]] + \
-                    [[EmptyF(x, 7, -1) for x in range(8)]]
-                    # [[sp[x](x, 7, -1) for x in range(len(sp))]]
-
-        self.grid[6][0] = Pawn(0, 7, 1)
+                    [[Pawn(x, 6, -1) for x in range(8)]] + \
+                    [[sp[x](x, 7, -1) for x in range(len(sp))]]
 
     def __getitem__(self, item):
         r = []
@@ -177,9 +174,10 @@ class Bord:
             self.grid[yy][xx] = self.grid[y][x].__class__(xx, yy, self.grid[y][x].color)
             self.grid[y][x] = EmptyF(x, y, 0)
 
-            if (yy == 0 and color == -1 or yy == 7 and color == 1) and self.grid[yy][xx].__class__ == Pawn:
+            if (yy == 0 and color == -1 or yy == 7 and color == 1) and self.grid[yy][xx].__class__ == Pawn and \
+               self.lose[self.grid[yy][xx].color]:
                 self.grid[yy][xx] = self.lose[color].pop(
-                    randint(0, len(self.lose[color])))(xx, yy, self.grid[y][x].color)
+                    randint(0, len(self.lose[color]) - 1))(xx, yy, self.grid[yy][xx].color)
 
             return True
         return False
@@ -212,10 +210,10 @@ class Game:
 
             if not self.bord.is_win(-self.color):
                 s = self.do_step()
-                s = [s[1]] + [s[0]] + [s[3]] + [s[2]]
                 while not s or len(s) != 4:
                     print('Ошибка')
                     s = self.do_step()
+                s = [s[1]] + [s[0]] + [s[3]] + [s[2]]
 
                 h = self.bord.step(self.color, *s)
                 while not h:
