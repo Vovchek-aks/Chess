@@ -128,6 +128,8 @@ class Bord:
             -1: []
         }
 
+        self.n_step = 1
+
         self.grid = [[sp[x](x, 0, 1) for x in range(len(sp))]] + \
                     [[Pawn(x, 1, 1) for x in range(8)]] + \
                     [[EmptyF(x, y) for x in range(8)] for y in range(2, 6)] + \
@@ -158,6 +160,7 @@ class Bord:
         return self.b_get_free() | self.b_get_busy(color)
 
     def draw(self):
+        print(f'Ход: {self.n_step}')
         print('\t' + '\t'.join([str(i + 1) for i in range(8)]))
         for i in range(8):
             print(i + 1, end='\t')
@@ -179,6 +182,7 @@ class Bord:
                 self.grid[yy][xx] = self.lose[color].pop(
                     randint(0, len(self.lose[color]) - 1))(xx, yy, self.grid[yy][xx].color)
 
+            self.n_step += 1
             return True
         return False
 
@@ -204,6 +208,15 @@ class Game:
             return False
 
     def do_game(self):
+
+        print('\n' * 32)
+        print('Консольные шахматы')
+        print('Правила:')
+        print('1)Нет ракировки')
+        print('2)Короля пративника необходимо съесть для победы')
+        print('3)Когда пешка достигает края карты, она заменяется на случайную потерянную фигуру')
+        input('ENTER - играть\n')
+
         while True:
             print('\n' * 32)
             self.bord.draw()
