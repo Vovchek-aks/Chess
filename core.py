@@ -159,7 +159,7 @@ class Bord:
     def b_get_all(self, color):
         return self.b_get_free() | self.b_get_busy(color)
 
-    def draw(self):
+    def print(self):
         print(f'Ход: {self.n_step}')
         print('\t' + '\t'.join([str(i + 1) for i in range(8)]))
         for i in range(8):
