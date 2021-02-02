@@ -1,4 +1,4 @@
-size = width, height = 960, 540
+size = width, height = 960, 500
 FPS = 60
 
 fig_sz = 50
