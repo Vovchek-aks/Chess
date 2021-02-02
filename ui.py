@@ -5,10 +5,35 @@ from ui_settings import *
 
 
 class UiBord(Bord):
-    def draw(self, sc, x, y, s):
-        for i in range(9):
-            pg.draw.line(sc, dk_gray, (x + i * s, y), (x + i * s, y + s * 8))
-            pg.draw.line(sc, dk_gray, (x, y + i * s), (x + s * 8, y + i * s))
+    def __init__(self):
+        super().__init__()
+        self.select = None
+
+    def draw(self, sc, fn, x, y, s, color):
+        sc.blit(fn.render(f'Ход: {self.n_step}{" " * 10} Ходит  {"белый" if color == 1 else "чёрный"}', False, dk_gray),
+                (x, y - fn.size('1')[1] - 10))
+        c = 1
+        for i in range(8):
+            for j in range(8):
+                pg.draw.rect(sc, (white if c == 1 else dk_gray), (x + s * j,
+                                                                  y + s * i,
+                                                                  s, s))
+                c *= -1
+
+                f = self.grid[i][j]
+                sc.blit(FIG_IM_ST[(f.__class__, f.color)], (x + s * j, y + s * i))
+            c *= -1
+
+
+class UiGame:
+    def __init__(self, sc, fn, x, y, s):
+        self.bord = UiBord()
+        self.dr_inf = (sc, fn, x, y, s)
+
+        self.color = 1
+
+    def do_game(self):
+        self.bord.draw(*self.dr_inf, self.color)
 
 
 def load_image(name, colorkey=None):  # загружает картинки
@@ -32,19 +57,19 @@ sc = pg.display.set_mode(size)
 
 
 FIG_IM_ST = {
-    (Pawn, 1):    load_image('f6.png'),
-    (Pawn, -1):   load_image('f12.png'),
-    (Rook, 1):    load_image('f5.png'),
-    (Rook, -1):   load_image('f11.png'),
-    (Knight, 1):  load_image('f4.png'),
-    (Knight, -1): load_image('f10.png'),
-    (Bishop, 1):  load_image('f3.png'),
-    (Bishop, -1): load_image('f9.png'),
-    (King, 1):    load_image('f2.png'),
-    (King, -1):   load_image('f8.png'),
-    (Queen, 1):   load_image('f1.png'),
-    (Queen, -1):  load_image('f7.png'),
-    (EmptyF, 0):  load_image('empty.png')
+    (Pawn, 1):    pg.transform.scale(load_image('f6.png'), (fig_sz, fig_sz)),
+    (Pawn, -1):   pg.transform.scale(load_image('f12.png'), (fig_sz, fig_sz)),
+    (Rook, 1):    pg.transform.scale(load_image('f5.png'), (fig_sz, fig_sz)),
+    (Rook, -1):   pg.transform.scale(load_image('f11.png'), (fig_sz, fig_sz)),
+    (Knight, 1):  pg.transform.scale(load_image('f4.png'), (fig_sz, fig_sz)),
+    (Knight, -1): pg.transform.scale(load_image('f10.png'), (fig_sz, fig_sz)),
+    (Bishop, 1):  pg.transform.scale(load_image('f3.png'), (fig_sz, fig_sz)),
+    (Bishop, -1): pg.transform.scale(load_image('f9.png'), (fig_sz, fig_sz)),
+    (King, 1):    pg.transform.scale(load_image('f2.png'), (fig_sz, fig_sz)),
+    (King, -1):   pg.transform.scale(load_image('f8.png'), (fig_sz, fig_sz)),
+    (Queen, 1):   pg.transform.scale(load_image('f1.png'), (fig_sz, fig_sz)),
+    (Queen, -1):  pg.transform.scale(load_image('f7.png'), (fig_sz, fig_sz)),
+    (EmptyF, 0):  pg.transform.scale(load_image('empty.png'), (fig_sz, fig_sz))
 }
 
 
@@ -52,7 +77,7 @@ clock = pg.time.Clock()
 
 font = pg.font.Font(None, 24)
 
-bord = UiBord()
+game = UiGame(sc, font, *bord_pos, fig_sz)
 
 while True:
     sc.fill(gray)
@@ -61,7 +86,7 @@ while True:
             exit(0)
 
     sc.blit(font.render(str(round(clock.get_fps())), False, red), (width - 50, 30))
-    bord.draw(sc, 50, 50, 50)
+    game.do_game()
 
     pg.display.flip()
     clock.tick(FPS)

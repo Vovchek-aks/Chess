@@ -219,7 +219,7 @@ class Game:
 
         while True:
             print('\n' * 32)
-            self.bord.draw()
+            self.bord.print()
 
             if not self.bord.is_win(-self.color):
                 s = self.do_step()
