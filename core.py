@@ -171,7 +171,7 @@ class Bord:
 
     def step(self, color, y, x, yy, xx):
         if (yy, xx) in self.grid[y][x].go_pos(self) and self.grid[y][x].color == color:
-            if self.grid[yy][xx].__class__ not in {Pawn, EmptyF}:
+            if self.grid[yy][xx].__class__ not in {Pawn, EmptyF, King}:
                 self.lose[-color] += [self.grid[yy][xx].__class__]
 
             self.grid[yy][xx] = self.grid[y][x].__class__(xx, yy, self.grid[y][x].color)
