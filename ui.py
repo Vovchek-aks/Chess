@@ -34,7 +34,6 @@ class UiBord(Bord):
             sc.blit(FIG_IM_ST[(self.lose[-1][i], -1)], (x + s * 8 + 50 + fig_sz, y + s * i))
 
 
-
 class UiGame:
     def __init__(self, sc, fn, x, y, s):
         self.bord = UiBord()
@@ -59,7 +58,10 @@ class UiGame:
                       i[0] * self.b_inf[2] + self.b_inf[1]
                 s = pg.Surface((self.b_inf[2], self.b_inf[2]))
                 s.set_alpha(150)
-                s.fill(lime)
+                if self.bord.grid[i[0]][i[1]].__class__ == EmptyF:
+                    s.fill(lime)
+                else:
+                    s.fill(red)
                 sc.blit(s, pos)
 
     def do_game(self):
@@ -91,7 +93,6 @@ def load_image(name, colorkey=None):  # загружает картинки
     fullname = os.path.join('data', name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
-        fullname = os.path.join('data', 'sprites', 'shrek3.png')
     image = pg.image.load(fullname)
     if colorkey is not None:
         image = image.convert()
@@ -126,6 +127,7 @@ FIG_IM_ST = {
 clock = pg.time.Clock()
 
 font = pg.font.Font(None, 24)
+font2 = pg.font.Font(None, 48)
 
 game = UiGame(sc, font, *bord_pos, fig_sz)
 
@@ -140,6 +142,20 @@ while True:
     # sc.blit(font.render(str(round(clock.get_fps())), False, red), (width - 50, 30))
 
     if game.do_game():
+        t = f'Победил {"белый" if game.color == -1 else "чёрный"}'
+        color = white if game.color == -1 else black
+        sc.blit(font2.render(t, False, color), (width - font2.size(t)[0] - 50,
+                                                height - font2.size(t)[1] - 10))
+        pg.display.flip()
+        f = True
+        while f:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    exit(0)
+                elif event.type == pg.MOUSEBUTTONDOWN:
+                    f = False
+                    break
+
         game = UiGame(sc, font, *bord_pos, fig_sz)
 
     pg.display.flip()

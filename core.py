@@ -187,10 +187,13 @@ class Bord:
         return False
 
     def is_win(self, color):
+        r = set()
         for i in self:
             if i.__class__ == King and i.color == -color:
                 return False
-        return True
+            if i.color == -color:
+                r |= i.go_pos(self)
+        return r
 
 
 class Game:
