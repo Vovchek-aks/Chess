@@ -1,3 +1,7 @@
+import math
+from random import randint
+
+
 class Neuron:
     def __init__(self, func, weights):
         self.func = func
@@ -22,5 +26,22 @@ class NeuronLayer:
 
 
 class NeuronNet:
-    pass
+    def __init__(self, layers):
+        self.layers = layers
+
+    def get_result(self, values):
+        for i in range(len(self.layers)):
+            values = self.layers[i].get_result(values)
+        return values
+
+
+def sigma(value):
+    x = ((1 + math.e**(-value))**-1)
+    return (x * 2 if value >= 0 else x / 2) - 1
+
+
+def shift(value):
+    return 1
+
+
 
