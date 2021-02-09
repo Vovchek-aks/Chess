@@ -35,8 +35,7 @@ class NeuronNet:
 
 
 def sigma(value):
-    x = ((1 + math.e**(-value))**-1)
-    return x * 2 - 1
+    return (1 + math.e**(-value))**-1 * 2 - 1
 
 
 def shift(value):
