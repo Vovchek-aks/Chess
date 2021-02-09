@@ -24,7 +24,8 @@ class UiBord(Bord):
                     sc.blit(FIG_IM_ST[(f.__class__, f.color)], (x + s * j, y + s * i))
 
             sc.blit(fn.render(str(8 - i), False, black), (x - 20, y + s // 2.5 + s * i))
-            sc.blit(fn.render(str(i + 1), False, black), (x + s // 2.5 + s * i, y + s * 8 + 10))
+            alf = 'ABCDEFGH'
+            sc.blit(fn.render(alf[i], False, black), (x + s // 2.5 + s * i, y + s * 8 + 10))
             c *= -1
 
         sc.blit(fn.render('Потери:', False, black), (x + s * 8 + 40, y - fn.size('1')[1] - 10))
@@ -34,65 +35,97 @@ class UiBord(Bord):
             sc.blit(FIG_IM_ST[(self.lose[-1][i], -1)], (x + s * 8 + 50 + fig_sz, y + s * i))
 
 
-class UiGame:
-    def __init__(self, sc, fn, x, y, s):
-        self.bord = UiBord()
-        self.b_inf = x, y, s
-        self.dr_inf = sc, fn, *self.b_inf
+class Player:
+    def __init__(self, bord, color):
+        self.bord = bord
+        self.color = color
 
-        self.color = 1
+    def get_step(self):
+        pass
+
+
+class PlayerP(Player):
+    def __init__(self, bord, color):
+        super().__init__(bord, color)
 
         self.select_pos = None
 
     def draw(self):
+        ret = []
         if self.select_pos is not None:
-            pos = self.select_pos[0] * self.b_inf[2] + self.b_inf[0], \
-                  self.select_pos[1] * self.b_inf[2] + self.b_inf[1]
-            s = pg.Surface((self.b_inf[2], self.b_inf[2]))
-            s.set_alpha(150)
-            s.fill(yellow)
-            sc.blit(s, pos)
+            ret += [(self.select_pos, yellow)]
 
             for i in self.bord.grid[self.select_pos[1]][self.select_pos[0]].go_pos(self.bord):
-                pos = i[1] * self.b_inf[2] + self.b_inf[0], \
-                      i[0] * self.b_inf[2] + self.b_inf[1]
-                s = pg.Surface((self.b_inf[2], self.b_inf[2]))
-                s.set_alpha(150)
                 if self.bord.grid[i[0]][i[1]].__class__ == EmptyF:
-                    s.fill(lime)
+                    c = lime
                 else:
-                    s.fill(red)
-                sc.blit(s, pos)
+                    c = red
+                ret += [(self.select_pos, c)]
+        return ret
 
     def do_game(self):
-        self.bord.draw(*self.dr_inf, self.color)
-        self.draw()
-        if self.bord.is_win(-self.color):
-            return True
-        return False
+        return self.draw(), self.get_step()
 
     def click(self, x, y):
-        xx = (x - self.b_inf[0]) // self.b_inf[2]
-        yy = (y - self.b_inf[1]) // self.b_inf[2]
-        if 0 <= xx < 8 and 0 <= yy < 8:
-            f = self.bord.grid[yy][xx]
+        if 0 <= x < 8 and 0 <= y < 8:
+            f = self.bord.grid[y][x]
             if f.go_pos(self.bord) and f.color == self.color:
-                self.select_pos = xx, yy
-            elif self.select_pos is not None and (yy, xx) in \
+                self.select_pos = x, y
+            elif self.select_pos is not None and (y, x) in \
                     self.bord.grid[self.select_pos[1]][self.select_pos[0]].go_pos(self.bord):
-                self.bord.step(self.color, *self.select_pos[::-1], yy, xx)
-                self.select_pos = None
-                self.color *= -1
+                return x, y
             else:
                 self.select_pos = None
         else:
             self.select_pos = None
+
+        return False
+
+    def get_step(self, pos=(0, 0)):
+        poss = self.click(*pos[::-1])
+        if poss:
+            return self.select_pos, poss
+
+
+class UiGame:
+    def __init__(self, sc, fn, x, y, s, players):
+        self.bord = UiBord()
+        self.b_inf = x, y, s
+        self.dr_inf = sc, fn, *self.b_inf
+
+        self.click_pos = (0, 0)
+
+        self.players = {
+            +1: players[0](self.bord, +1),
+            -1: players[1](self.bord, -1)
+        }
+
+        self.color = 1
+
+    def draw(self, to_dr):
+        self.bord.draw(*self.dr_inf, self.color)
+
+        for j in to_dr:
+            i = j[0]
+            pos = i[1] * self.b_inf[2] + self.b_inf[0], \
+                  i[0] * self.b_inf[2] + self.b_inf[1]
+            s = pg.Surface((self.b_inf[2], self.b_inf[2]))
+            s.set_alpha(150)
+            s.fill(j[1])
+            sc.blit(s, pos)
+
+    def do_game(self):
+        self.draw(self.players[self.color].draw())
+
+    def click(self, pos):
+        self.click_pos = pos
 
 
 def load_image(name, colorkey=None):  # загружает картинки
     fullname = os.path.join('data', name)
     if not os.path.isfile(fullname):
         print(f"Файл с изображением '{fullname}' не найден")
+        exit(0)
     image = pg.image.load(fullname)
     if colorkey is not None:
         image = image.convert()
@@ -129,7 +162,7 @@ clock = pg.time.Clock()
 font = pg.font.Font(None, 24)
 font2 = pg.font.Font(None, 48)
 
-game = UiGame(sc, font, *bord_pos, fig_sz)
+game = UiGame(sc, font, *bord_pos, fig_sz, (PlayerP, PlayerP))
 
 while True:
     sc.fill(gray)
@@ -137,7 +170,7 @@ while True:
         if event.type == pg.QUIT:
             exit(0)
         elif event.type == pg.MOUSEBUTTONDOWN:
-            game.click(*event.pos)
+            game.click(event.pos)
 
     # sc.blit(font.render(str(round(clock.get_fps())), False, red), (width - 50, 30))
 
