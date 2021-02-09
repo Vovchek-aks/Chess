@@ -118,10 +118,10 @@ FIG_IM_ST = {
     (Knight, -1): pg.transform.scale(load_image('f10.png'), (fig_sz, fig_sz)),
     (Bishop, 1): pg.transform.scale(load_image('f3.png'), (fig_sz, fig_sz)),
     (Bishop, -1): pg.transform.scale(load_image('f9.png'), (fig_sz, fig_sz)),
-    (King, 1): pg.transform.scale(load_image('f2.png'), (fig_sz, fig_sz)),
-    (King, -1): pg.transform.scale(load_image('f8.png'), (fig_sz, fig_sz)),
-    (Queen, 1): pg.transform.scale(load_image('f1.png'), (fig_sz, fig_sz)),
-    (Queen, -1): pg.transform.scale(load_image('f7.png'), (fig_sz, fig_sz))
+    (King, 1): pg.transform.scale(load_image('f1.png'), (fig_sz, fig_sz)),
+    (King, -1): pg.transform.scale(load_image('f7.png'), (fig_sz, fig_sz)),
+    (Queen, 1): pg.transform.scale(load_image('f2.png'), (fig_sz, fig_sz)),
+    (Queen, -1): pg.transform.scale(load_image('f8.png'), (fig_sz, fig_sz))
 }
 
 clock = pg.time.Clock()

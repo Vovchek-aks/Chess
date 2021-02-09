@@ -257,10 +257,10 @@ FIG_IM_ST = {
     (Knight, -1): '♘',
     (Bishop, 1): '♝',
     (Bishop, -1): '♗',
-    (King, 1): '♛',
-    (King, -1): '♕',
-    (Queen, 1): '♚',
-    (Queen, -1): '♔',
+    (King, 1): '♚',
+    (King, -1): '♔',
+    (Queen, 1): '♛',
+    (Queen, -1): '♕',
     (EmptyF, 0): '-'
 }
 
