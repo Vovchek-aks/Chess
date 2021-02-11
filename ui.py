@@ -85,7 +85,6 @@ class PlayerP(Player):
             r = self.select_pos, self.step
             self.select_pos = None
             self.step = None
-            print(r)
             return r
 
 
