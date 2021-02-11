@@ -43,6 +43,9 @@ class Player:
     def get_step(self):
         pass
 
+    def draw(self):
+        return ()
+
 
 class PlayerP(Player):
     def __init__(self, bord, color):
@@ -63,9 +66,6 @@ class PlayerP(Player):
                     c = red
                 ret += [(i, c)]
         return ret
-
-    def do_game(self):
-        return self.draw(), self.get_step()
 
     def click(self, x, y):
         if 0 <= x < 8 and 0 <= y < 8:
@@ -133,7 +133,8 @@ class UiGame:
 
     def click(self, pos):
         self.click_pos = pos
-        self.players[self.color].click(*self.grit_pos(pos))
+        if self.players[self.color].__class__ == PlayerP:
+            self.players[self.color].click(*self.grit_pos(pos))
 
 
 def load_image(name, colorkey=None):  # загружает картинки
