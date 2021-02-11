@@ -49,18 +49,19 @@ class PlayerP(Player):
         super().__init__(bord, color)
 
         self.select_pos = None
+        self.step = None
 
     def draw(self):
         ret = []
         if self.select_pos is not None:
-            ret += [(self.select_pos, yellow)]
+            ret += [(self.select_pos[::-1], yellow)]
 
             for i in self.bord.grid[self.select_pos[1]][self.select_pos[0]].go_pos(self.bord):
                 if self.bord.grid[i[0]][i[1]].__class__ == EmptyF:
                     c = lime
                 else:
                     c = red
-                ret += [(self.select_pos, c)]
+                ret += [(i, c)]
         return ret
 
     def do_game(self):
@@ -73,18 +74,19 @@ class PlayerP(Player):
                 self.select_pos = x, y
             elif self.select_pos is not None and (y, x) in \
                     self.bord.grid[self.select_pos[1]][self.select_pos[0]].go_pos(self.bord):
-                return x, y
+                self.step = x, y
             else:
                 self.select_pos = None
         else:
             self.select_pos = None
 
-        return False
-
     def get_step(self, pos=(0, 0)):
-        poss = self.click(*pos[::-1])
-        if poss:
-            return self.select_pos, poss
+        if self.step:
+            r = self.select_pos, self.step
+            self.select_pos = None
+            self.step = None
+            print(r)
+            return r
 
 
 class UiGame:
@@ -102,7 +104,7 @@ class UiGame:
 
         self.color = 1
 
-    def draw(self, to_dr):
+    def draw(self, to_dr=()):
         self.bord.draw(*self.dr_inf, self.color)
 
         for j in to_dr:
@@ -115,10 +117,24 @@ class UiGame:
             sc.blit(s, pos)
 
     def do_game(self):
-        self.draw(self.players[self.color].draw())
+        p = self.players[self.color]
+        # print(p.select_pos)
+        self.draw(p.draw())
+        r = p.get_step(self.click_pos)
+        if r:
+            self.bord.step(self.color, *r[0][::-1], *r[1][::-1])
+            self.color *= -1
+            f = self.bord.is_win(-self.color)
+            if f:
+                self.draw()
+                return True
+
+    def grit_pos(self, pos):
+        return (pos[0] - self.b_inf[0]) // self.b_inf[2], (pos[1] - self.b_inf[1]) // self.b_inf[2]
 
     def click(self, pos):
         self.click_pos = pos
+        self.players[self.color].click(*self.grit_pos(pos))
 
 
 def load_image(name, colorkey=None):  # загружает картинки
@@ -189,7 +205,7 @@ while True:
                     f = False
                     break
 
-        game = UiGame(sc, font, *bord_pos, fig_sz)
+        game = UiGame(sc, font, *bord_pos, fig_sz, (PlayerP, PlayerP))
 
     pg.display.flip()
     clock.tick(FPS)
