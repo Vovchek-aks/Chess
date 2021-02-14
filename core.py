@@ -178,7 +178,7 @@ class Bord:
             self.grid[y][x] = EmptyF(x, y, 0)
 
             if (yy == 0 and color == -1 or yy == 7 and color == 1) and self.grid[yy][xx].__class__ == Pawn and \
-               self.lose[self.grid[yy][xx].color]:
+                    self.lose[self.grid[yy][xx].color]:
                 self.grid[yy][xx] = self.lose[color].pop(
                     randint(0, len(self.lose[color]) - 1))(xx, yy, self.grid[yy][xx].color)
 
