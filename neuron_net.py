@@ -1,4 +1,5 @@
 import math
+from random import randint
 
 
 class Neuron:
@@ -42,14 +43,22 @@ class NeuronNet:
         values = values1
         for i in range(len(self.layers)):
             values = self.layers[i].get_result(values)
-        return [sum(i) for i in values]
+        return [relu(sum(i)) for i in values]
 
     def __repr__(self):
         return '\n'.join([i.__repr__() for i in self.layers])
 
 
 def sigma(value):
-    return (1 + math.e**(-value))**-1 * 2 - 1
+    return (1 + math.e**(-value))**-1
+
+
+def relu(value):
+    if 0 <= value < 100:
+        return value
+    if value > 0:
+        return 100
+    return 0
 
 
 def generator(net):
@@ -57,18 +66,19 @@ def generator(net):
     for i in net.split('\n\n'):
         g = []
         for j in i.split('\n'):
-            g += [Neuron(sigma, [int(g) for g in j.split()])]
+            g += [Neuron(sigma, [float(g) for g in j.split()])]
         nnet += [NeuronLayer(g)]
     return NeuronNet(nnet)
 
 
-snet = '10 20 35\n' \
-       '2 0 1\n' \
+snet = '10.1 2 35\n' \
+       '2 45.8 1\n' \
        '\n' \
        '2 4\n' \
-       '7 8\n' \
-       '4 4'
+       '7.7 8\n' \
+       '4999 4999'
 
 net = generator(snet)
 
-print(net.get_result([1000000, 100000, 10000]))
+for _ in range(100):
+    print(net.get_result([randint(-10, 10) for _ in range(3)]))
