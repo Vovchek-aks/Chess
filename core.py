@@ -78,8 +78,8 @@ class Knight(StepAttack):
                 (self.x - 2, self.y + 1)[::-1]} & bord.b_get_all(self.color)
 
 
-class Rook(StepAttack):
-    def get_step_pos(self, bord):
+class RBQ(StepAttack):
+    def r_get_step_pos(self, bord):
         r = set()
         f = bord.b_get_free()
         b = bord.b_get_busy(self.color)
@@ -96,9 +96,7 @@ class Rook(StepAttack):
                     break
         return r
 
-
-class Bishop(StepAttack):
-    def get_step_pos(self, bord):
+    def b_get_step_pos(self, bord):
         r = set()
         f = bord.b_get_free()
         b = bord.b_get_busy(self.color)
@@ -116,9 +114,19 @@ class Bishop(StepAttack):
         return r
 
 
-class Queen(StepAttack):
+class Rook(RBQ):
     def get_step_pos(self, bord):
-        return Bishop(*self.pos[::-1], self.color).go_pos(bord) | Rook(*self.pos[::-1], self.color).go_pos(bord)
+        return super().r_get_step_pos(bord)
+
+
+class Bishop(RBQ):
+    def get_step_pos(self, bord):
+        return super().b_get_step_pos(bord)
+
+
+class Queen(RBQ):
+    def get_step_pos(self, bord):
+        return super().b_get_step_pos(bord) | super().r_get_step_pos(bord)
 
 
 class King(StepAttack):
@@ -256,6 +264,23 @@ class Game:
             else:
                 print(f'Победил {"белый" if -self.color == 1 else "чёрный"}')
                 return
+
+
+def get_cost(fig, k):
+    costs = {
+        EmptyF: 1,
+        Pawn: 2,
+        Knight: 6,
+        Bishop: 6,
+        Rook: 11,
+        Queen: 18,
+    }
+    if fig in costs:
+        return costs[fig]
+    if k:
+        return 50
+    return 0
+
 
 
 FIG_IM_ST = {
