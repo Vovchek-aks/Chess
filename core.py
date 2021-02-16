@@ -1,4 +1,5 @@
 from random import randint
+from copy import deepcopy
 
 
 class Figure:
@@ -155,7 +156,7 @@ class Bord:
                         [[Pawn(x, 6, -1) for x in range(8)]] + \
                         [[sp[x](x, 7, -1) for x in range(len(sp))]]
         else:
-            self.grid = grid
+            self.grid = deepcopy(grid)
 
     def __getitem__(self, item):
         r = []

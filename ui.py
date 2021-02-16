@@ -5,8 +5,8 @@ from ui_settings import *
 
 
 class UiBord(Bord):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, grid=None):
+        super().__init__(grid)
 
     def draw(self, sc, fn, x, y, s, color):
         sc.blit(fn.render(f'Ход: {self.n_step}{" " * 10} Ходит  {"белый" if color == 1 else "чёрный"}', False, black),
@@ -107,9 +107,10 @@ class PlayerAi(Player):
         figs = self.get_figs(self.bord)
         for i in self.get_steps(figs):
             b = Bord(self.bord.grid)
-            # print(b, self.bord)
+            # print(b is self.bord)
             b.step(self.color, *i)
             figs2 = self.get_figs(b)
+        return False
 
 
 class UiGame:
