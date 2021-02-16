@@ -22,6 +22,9 @@ class Figure:
     def go_pos(self, bord):
         return self.get_step_pos(bord) | self.get_attack_pos(bord)
 
+    def get_posbl_pos(self, bord):
+        return set()
+
     def ded(self):
         self.is_ded = True
 
@@ -29,6 +32,9 @@ class Figure:
 class StepAttack(Figure):
     def get_attack_pos(self, bord):
         return self.get_step_pos(bord)
+
+    def get_posbl_pos(self, bord):
+        return self.go_pos(bord)
 
 
 class EmptyF(StepAttack):
@@ -51,6 +57,10 @@ class Pawn(Figure):
         y = self.y + self.color
         return {(self.x - 1, y)[::-1],
                 (self.x + 1, y)[::-1]} & bord.b_get_busy(self.color)
+
+    def get_posbl_pos(self, bord):
+        y = self.y + self.color
+        self.get_step_pos(bord) | {(self.x - 1, y)[::-1], (self.x + 1, y)[::-1]}
 
 
 class Knight(StepAttack):
