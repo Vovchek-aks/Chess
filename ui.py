@@ -103,14 +103,25 @@ class PlayerAi(Player):
                 s += [(*i.pos, *j)]
         return s
 
+    def cost(self, bord):
+        summ = 0
+        for i in self.get_figs(bord):
+            for j in self.get_steps([i]):
+                summ += get_cost(bord.grid[j[2]][j[3]], i.color != self.color)
+        return summ
+
     def get_step(self, pos=(0, 0)):
         figs = self.get_figs(self.bord)
+        hods = []
         for i in self.get_steps(figs):
             b = Bord(self.bord.grid)
             # print(b is self.bord)
             b.step(self.color, *i)
-            figs2 = self.get_figs(b)
-        return False
+            hods += [((i[0:2][::-1], i[2:][::-1]), self.cost(b))]
+
+        ret = sorted(hods, key=lambda x: x[1])[0][0]
+        print(ret)
+        return ret
 
 
 class UiGame:
@@ -145,7 +156,9 @@ class UiGame:
         # print(p.select_pos)
         self.draw(p.draw())
         r = p.get_step(self.click_pos)
+        # print(r)
         if r:
+            print(1)
             self.bord.step(self.color, *r[0][::-1], *r[1][::-1])
             self.color *= -1
             f = self.bord.is_win(-self.color)
