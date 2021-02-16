@@ -122,7 +122,6 @@ class PlayerAi(Player):
             hods += [((i[0:2][::-1], i[2:][::-1]), self.cost(b))]
 
         ret = sorted(hods, key=lambda x: x[1])
-        print(ret)
         return ret[0][0]
 
 
@@ -160,7 +159,6 @@ class UiGame:
         r = p.get_step(self.click_pos)
         # print(r)
         if r:
-            print(1)
             self.bord.step(self.color, *r[0][::-1], *r[1][::-1])
             self.color *= -1
             f = self.bord.is_win(-self.color)
