@@ -2,6 +2,7 @@ import pygame as pg
 from core import *
 import os
 from ui_settings import *
+from time import sleep
 
 
 class UiBord(Bord):
@@ -107,10 +108,11 @@ class PlayerAi(Player):
         summ = 0
         for i in self.get_figs(bord):
             for j in self.get_steps([i]):
-                summ += get_cost(bord.grid[j[2]][j[3]], i.color != self.color)
+                summ += get_cost(bord.grid[j[2]][j[3]].__class__, i.color != self.color) + randint(0, 20)
         return summ
 
     def get_step(self, pos=(0, 0)):
+        99**99
         figs = self.get_figs(self.bord)
         hods = []
         for i in self.get_steps(figs):
@@ -119,9 +121,9 @@ class PlayerAi(Player):
             b.step(self.color, *i)
             hods += [((i[0:2][::-1], i[2:][::-1]), self.cost(b))]
 
-        ret = sorted(hods, key=lambda x: x[1])[0][0]
+        ret = sorted(hods, key=lambda x: x[1])
         print(ret)
-        return ret
+        return ret[0][0]
 
 
 class UiGame:
@@ -216,7 +218,9 @@ clock = pg.time.Clock()
 font = pg.font.Font(None, 24)
 font2 = pg.font.Font(None, 48)
 
-game = UiGame(sc, font, *bord_pos, fig_sz, (PlayerP, PlayerAi))
+pl = (PlayerAi, PlayerAi)
+
+game = UiGame(sc, font, *bord_pos, fig_sz, pl)
 
 while True:
     sc.fill(gray)
@@ -236,14 +240,18 @@ while True:
         pg.display.flip()
         f = True
         while f:
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    exit(0)
-                elif event.type == pg.MOUSEBUTTONDOWN:
-                    f = False
-                    break
+            if False:
+                for event in pg.event.get():
+                    if event.type == pg.QUIT:
+                        exit(0)
+                    elif event.type == pg.MOUSEBUTTONDOWN:
+                        f = False
+                        break
+            else:
+                sleep(1)
+                break
 
-        game = UiGame(sc, font, *bord_pos, fig_sz, (PlayerP, PlayerAi))
+        game = UiGame(sc, font, *bord_pos, fig_sz, pl)
 
     pg.display.flip()
     clock.tick(FPS)

@@ -279,11 +279,12 @@ def get_cost(fig, k):
         Rook: 11,
         Queen: 18,
     }
-    if fig in costs:
-        return costs[fig]
+    r = costs.get(fig, False)
+    if r:
+        return r
     if k:
         return 50
-    return 0
+    return 1
 
 
 
