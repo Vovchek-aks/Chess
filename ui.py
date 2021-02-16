@@ -88,6 +88,30 @@ class PlayerP(Player):
             return r
 
 
+class PlayerAi(Player):
+    def get_figs(self, bord):
+        figs = []
+        for i in bord:
+            if i.color == self.color:
+                figs += [i]
+        return figs
+
+    def get_steps(self, figs):
+        s = []
+        for i in figs:
+            for j in i.go_pos(self.bord):
+                s += [(*i.pos, *j)]
+        return s
+
+    def get_step(self, pos=(0, 0)):
+        figs = self.get_figs(self.bord)
+        for i in self.get_steps(figs):
+            b = Bord(self.bord.grid)
+            # print(b, self.bord)
+            b.step(self.color, *i)
+            figs2 = self.get_figs(b)
+
+
 class UiGame:
     def __init__(self, sc, fn, x, y, s, players):
         self.bord = UiBord()
@@ -178,7 +202,7 @@ clock = pg.time.Clock()
 font = pg.font.Font(None, 24)
 font2 = pg.font.Font(None, 48)
 
-game = UiGame(sc, font, *bord_pos, fig_sz, (PlayerP, PlayerP))
+game = UiGame(sc, font, *bord_pos, fig_sz, (PlayerP, PlayerAi))
 
 while True:
     sc.fill(gray)
@@ -205,7 +229,7 @@ while True:
                     f = False
                     break
 
-        game = UiGame(sc, font, *bord_pos, fig_sz, (PlayerP, PlayerP))
+        game = UiGame(sc, font, *bord_pos, fig_sz, (PlayerP, PlayerAi))
 
     pg.display.flip()
     clock.tick(FPS)

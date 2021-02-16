@@ -138,7 +138,7 @@ class King(StepAttack):
 
 
 class Bord:
-    def __init__(self):
+    def __init__(self, grid=None):
         sp = [Rook, Knight, Bishop, King, Queen, Bishop, Knight, Rook]
 
         self.lose = {
@@ -148,11 +148,14 @@ class Bord:
 
         self.n_step = 1
 
-        self.grid = [[sp[x](x, 0, 1) for x in range(len(sp))]] + \
-                    [[Pawn(x, 1, 1) for x in range(8)]] + \
-                    [[EmptyF(x, y) for x in range(8)] for y in range(2, 6)] + \
-                    [[Pawn(x, 6, -1) for x in range(8)]] + \
-                    [[sp[x](x, 7, -1) for x in range(len(sp))]]
+        if grid is None:
+            self.grid = [[sp[x](x, 0, 1) for x in range(len(sp))]] + \
+                        [[Pawn(x, 1, 1) for x in range(8)]] + \
+                        [[EmptyF(x, y) for x in range(8)] for y in range(2, 6)] + \
+                        [[Pawn(x, 6, -1) for x in range(8)]] + \
+                        [[sp[x](x, 7, -1) for x in range(len(sp))]]
+        else:
+            self.grid = grid
 
     def __getitem__(self, item):
         r = []
