@@ -112,7 +112,6 @@ class PlayerAi(Player):
         return summ
 
     def get_step(self, pos=(0, 0)):
-        99**99
         figs = self.get_figs(self.bord)
         hods = []
         for i in self.get_steps(figs):
@@ -160,11 +159,11 @@ class UiGame:
         # print(r)
         if r:
             self.bord.step(self.color, *r[0][::-1], *r[1][::-1])
-            self.color *= -1
             f = self.bord.is_win(-self.color)
             if f:
                 self.draw()
                 return True
+            self.color *= -1
 
     def grit_pos(self, pos):
         return (pos[0] - self.b_inf[0]) // self.b_inf[2], (pos[1] - self.b_inf[1]) // self.b_inf[2]
@@ -227,6 +226,14 @@ while True:
             exit(0)
         elif event.type == pg.MOUSEBUTTONDOWN:
             game.click(event.pos)
+            f = True
+            while f:
+                for event in pg.event.get():
+                    if event.type == pg.QUIT:
+                        exit(0)
+                    elif event.type == pg.MOUSEBUTTONDOWN:
+                        game.click(event.pos)
+                        f = False
 
     # sc.blit(font.render(str(round(clock.get_fps())), False, red), (width - 50, 30))
 

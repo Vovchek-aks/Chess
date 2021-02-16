@@ -1,5 +1,5 @@
 size = width, height = 900, 500
-FPS = 60
+FPS = 600
 
 fig_sz = 50
 bord_pos = 50, 50
