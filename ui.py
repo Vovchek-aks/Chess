@@ -108,20 +108,26 @@ class PlayerAi(Player):
         summ = 0
         for i in self.get_figs(bord):
             for j in self.get_steps([i]):
-                summ += get_cost(bord.grid[j[2]][j[3]].__class__, i.color != self.color) + randint(0, 20)
-        return summ
+                summ += get_cost(bord.grid[j[2]][j[3]].__class__, bord.grid[j[2]][j[3]].color != self.color)
+        return summ + randint(0, 100)
 
-    def get_step(self, pos=(0, 0)):
+    def get_step(self, enemy):
         figs = self.get_figs(self.bord)
         hods = []
         for i in self.get_steps(figs):
             b = Bord(self.bord.grid)
             # print(b is self.bord)
             b.step(self.color, *i)
-            hods += [((i[0:2][::-1], i[2:][::-1]), self.cost(b))]
+            hods += [
+                ((i[0:2][::-1], i[2:][::-1]),
+                 self.cost(b) - enemy.cost(b) + get_cost(self.bord.grid[i[2]][i[3]].__class__, True) * 2 -
+                 get_cost(self.bord.grid[i[0]][i[1]].__class__, True) // 2)
+            ]
 
-        ret = sorted(hods, key=lambda x: x[1])
-        return ret[0][0]
+        ret = sorted(hods, key=lambda x: -x[1])
+        if ret:
+            return ret[0][0]
+        return 'end'
 
 
 class UiGame:
@@ -151,13 +157,21 @@ class UiGame:
             s.fill(j[1])
             sc.blit(s, pos)
 
+        pg.display.flip()
+
     def do_game(self):
         p = self.players[self.color]
         # print(p.select_pos)
         self.draw(p.draw())
-        r = p.get_step(self.click_pos)
+        if p.__class__ == PlayerP:
+            r = p.get_step(self.click_pos)
+        elif p.__class__ == PlayerAi:
+            r = p.get_step(self.players[-self.color])
         # print(r)
         if r:
+            if r == 'end':
+                self.draw()
+                return True
             self.bord.step(self.color, *r[0][::-1], *r[1][::-1])
             f = self.bord.is_win(-self.color)
             if f:
@@ -226,14 +240,16 @@ while True:
             exit(0)
         elif event.type == pg.MOUSEBUTTONDOWN:
             game.click(event.pos)
-            f = True
-            while f:
-                for event in pg.event.get():
-                    if event.type == pg.QUIT:
-                        exit(0)
-                    elif event.type == pg.MOUSEBUTTONDOWN:
-                        game.click(event.pos)
-                        f = False
+        elif event.type == pg.KEYDOWN:
+            if event.key == pg.K_SPACE:
+                f = True
+                while f:
+                    for event in pg.event.get():
+                        if event.type == pg.QUIT:
+                            exit(0)
+                        elif event.type == pg.KEYDOWN:
+                            if event.key == pg.K_SPACE:
+                                f = False
 
     # sc.blit(font.render(str(round(clock.get_fps())), False, red), (width - 50, 30))
 
@@ -258,5 +274,5 @@ while True:
 
         game = UiGame(sc, font, *bord_pos, fig_sz, pl)
 
-    pg.display.flip()
+    # pg.display.flip()
     clock.tick(FPS)

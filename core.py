@@ -201,8 +201,9 @@ class Bord:
 
             if (yy == 0 and color == -1 or yy == 7 and color == 1) and self.grid[yy][xx].__class__ == Pawn and \
                     self.lose[self.grid[yy][xx].color]:
-                self.grid[yy][xx] = self.lose[color].pop(
-                    randint(0, len(self.lose[color]) - 1))(xx, yy, self.grid[yy][xx].color)
+                # self.grid[yy][xx] = self.lose[color].pop(
+                #     randint(0, len(self.lose[color]) - 1))(xx, yy, self.grid[yy][xx].color)
+                self.grid[yy][xx] = Queen(xx, yy, self.grid[yy][xx].color)
 
             self.n_step += 1
             return True
@@ -282,10 +283,9 @@ def get_cost(fig, k):
     r = costs.get(fig, False)
     if r:
         return r
-    if k:
-        return 50
-    return 1
-
+    if k and fig == King:
+        return 10000
+    return 0
 
 
 FIG_IM_ST = {
