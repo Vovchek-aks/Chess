@@ -271,7 +271,7 @@ while True:
                         f = False
                         break
             else:
-                sleep(3)
+                sleep(1)
                 break
 
         game = UiGame(sc, font, *bord_pos, fig_sz, pl)
