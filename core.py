@@ -274,11 +274,11 @@ class Game:
 def get_cost(fig, k):
     costs = {
         EmptyF: 1,
-        Pawn: 2,
-        Knight: 6,
-        Bishop: 6,
-        Rook: 11,
-        Queen: 18,
+        Pawn: 4,
+        Knight: 12,
+        Bishop: 12,
+        Rook: 22,
+        Queen: 36,
     }
     r = costs.get(fig, False)
     if r:

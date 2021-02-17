@@ -47,6 +47,27 @@ class Player:
     def draw(self):
         return ()
 
+    def get_figs(self, bord):
+        figs = []
+        for i in bord:
+            if i.color == self.color:
+                figs += [i]
+        return figs
+
+    def get_steps(self, figs):
+        s = []
+        for i in figs:
+            for j in i.go_pos(self.bord):
+                s += [(*i.pos, *j)]
+        return s
+
+    def cost(self, bord):
+        summ = 0
+        for i in self.get_figs(bord):
+            for j in self.get_steps([i]):
+                summ += get_cost(bord.grid[j[2]][j[3]].__class__, bord.grid[j[2]][j[3]].color != self.color)
+        return summ + randint(0, 100)
+
 
 class PlayerP(Player):
     def __init__(self, bord, color):
@@ -90,27 +111,6 @@ class PlayerP(Player):
 
 
 class PlayerAi(Player):
-    def get_figs(self, bord):
-        figs = []
-        for i in bord:
-            if i.color == self.color:
-                figs += [i]
-        return figs
-
-    def get_steps(self, figs):
-        s = []
-        for i in figs:
-            for j in i.go_pos(self.bord):
-                s += [(*i.pos, *j)]
-        return s
-
-    def cost(self, bord):
-        summ = 0
-        for i in self.get_figs(bord):
-            for j in self.get_steps([i]):
-                summ += get_cost(bord.grid[j[2]][j[3]].__class__, bord.grid[j[2]][j[3]].color != self.color)
-        return summ + randint(0, 100)
-
     def get_step(self, enemy):
         figs = self.get_figs(self.bord)
         hods = []
@@ -120,8 +120,8 @@ class PlayerAi(Player):
             b.step(self.color, *i)
             hods += [
                 ((i[0:2][::-1], i[2:][::-1]),
-                 self.cost(b) - enemy.cost(b) + get_cost(self.bord.grid[i[2]][i[3]].__class__, True) * 2 -
-                 get_cost(self.bord.grid[i[0]][i[1]].__class__, True) // 2)
+                 self.cost(b) - enemy.cost(b) * 2 + get_cost(self.bord.grid[i[2]][i[3]].__class__, True) * 10 -
+                 get_cost(self.bord.grid[i[0]][i[1]].__class__, True))
             ]
 
         ret = sorted(hods, key=lambda x: -x[1])
@@ -169,11 +169,11 @@ class UiGame:
             r = p.get_step(self.players[-self.color])
         # print(r)
         if r:
-            if r == 'end':
+            if r == 'end' or self.bord.n_step >= 500:
                 self.draw()
                 return True
             self.bord.step(self.color, *r[0][::-1], *r[1][::-1])
-            f = self.bord.is_win(-self.color)
+            f = self.bord.is_win(self.color)
             if f:
                 self.draw()
                 return True
