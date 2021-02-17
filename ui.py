@@ -232,7 +232,7 @@ clock = pg.time.Clock()
 font = pg.font.Font(None, 24)
 font2 = pg.font.Font(None, 48)
 
-pl = (PlayerP, PlayerAi)
+pl = (PlayerAi, PlayerAi)
 
 game = UiGame(sc, font, *bord_pos, fig_sz, pl)
 
