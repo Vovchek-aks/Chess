@@ -49,8 +49,8 @@ class EmptyF(StepAttack):
 class Pawn(Figure):
     def get_step_pos(self, bord):
         r = {(self.x, self.y + self.color)[::-1]} & bord.b_get_free()
-        if self.color == 1 and self.y == 1 or \
-                self.color == -1 and self.y == 6:
+        if (self.color == 1 and self.y == 1 or
+                self.color == -1 and self.y == 6) and {(self.x, self.y + self.color)[::-1]} & bord.b_get_free():
             r |= {(self.x, self.y + self.color * 2)[::-1]} & bord.b_get_free()
         return r
 

@@ -66,7 +66,7 @@ class Player:
         for i in self.get_figs(bord):
             for j in self.get_steps([i]):
                 summ += get_cost(bord.grid[j[2]][j[3]].__class__, bord.grid[j[2]][j[3]].color != self.color)
-        return summ + randint(0, 100)
+        return summ + randint(0, 10)
 
 
 class PlayerP(Player):
@@ -112,6 +112,7 @@ class PlayerP(Player):
 
 class PlayerAi(Player):
     def get_step(self, enemy):
+        # sleep(1)
         figs = self.get_figs(self.bord)
         hods = []
         for i in self.get_steps(figs):
@@ -120,8 +121,8 @@ class PlayerAi(Player):
             b.step(self.color, *i)
             hods += [
                 ((i[0:2][::-1], i[2:][::-1]),
-                 self.cost(b) - enemy.cost(b) * 2 + get_cost(self.bord.grid[i[2]][i[3]].__class__, True) * 10 -
-                 get_cost(self.bord.grid[i[0]][i[1]].__class__, True))
+                 self.cost(b) - enemy.cost(b) * 50 + get_cost(self.bord.grid[i[2]][i[3]].__class__, True) * 10 -
+                 get_cost(self.bord.grid[i[0]][i[1]].__class__, True) // 2)
             ]
 
         ret = sorted(hods, key=lambda x: -x[1])
@@ -231,7 +232,7 @@ clock = pg.time.Clock()
 font = pg.font.Font(None, 24)
 font2 = pg.font.Font(None, 48)
 
-pl = (PlayerAi, PlayerAi)
+pl = (PlayerP, PlayerAi)
 
 game = UiGame(sc, font, *bord_pos, fig_sz, pl)
 
