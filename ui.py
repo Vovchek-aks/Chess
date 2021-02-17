@@ -170,11 +170,13 @@ class UiGame:
         # print(r)
         if r:
             if r == 'end' or self.bord.n_step >= 500:
+                sc.fill(gray)
                 self.draw()
                 return True
             self.bord.step(self.color, *r[0][::-1], *r[1][::-1])
             f = self.bord.is_win(self.color)
             if f:
+                sc.fill(gray)
                 self.draw()
                 return True
             self.color *= -1
@@ -229,7 +231,7 @@ clock = pg.time.Clock()
 font = pg.font.Font(None, 24)
 font2 = pg.font.Font(None, 48)
 
-pl = (PlayerAi, PlayerAi)
+pl = (PlayerP, PlayerAi)
 
 game = UiGame(sc, font, *bord_pos, fig_sz, pl)
 
@@ -254,8 +256,8 @@ while True:
     # sc.blit(font.render(str(round(clock.get_fps())), False, red), (width - 50, 30))
 
     if game.do_game():
-        t = f'Победил {"белый" if game.color == -1 else "чёрный"}'
-        color = white if game.color == -1 else black
+        t = f'Победил {"белый" if game.color == 1 else "чёрный"}'
+        color = white if game.color == 1 else black
         sc.blit(font2.render(t, False, color), (width - font2.size(t)[0] - 50,
                                                 height - font2.size(t)[1] - 10))
         pg.display.flip()
@@ -269,7 +271,7 @@ while True:
                         f = False
                         break
             else:
-                sleep(1)
+                sleep(3)
                 break
 
         game = UiGame(sc, font, *bord_pos, fig_sz, pl)
