@@ -168,7 +168,6 @@ class UiGame:
             r = p.get_step(self.click_pos)
         elif p.__class__ == PlayerAi:
             r = p.get_step(self.players[-self.color])
-        # print(r)
         if r:
             if r == 'end' or self.bord.n_step >= 500:
                 sc.fill(gray)
