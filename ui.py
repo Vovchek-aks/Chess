@@ -111,6 +111,11 @@ class PlayerP(Player):
 
 
 class PlayerAi(Player):
+    def __init__(self, bord, color):
+        super().__init__(bord, color)
+
+        self.last_h = []
+
     def get_step(self, enemy):
         # sleep(1)
         figs = self.get_figs(self.bord)
@@ -127,8 +132,12 @@ class PlayerAi(Player):
 
         ret = sorted(hods, key=lambda x: -x[1])
         if ret:
+            self.last_h = [(ret[0][0][0][::-1], blue), (ret[0][0][1][::-1], blue)]
             return ret[0][0]
         return 'end'
+
+    def draw(self):
+        return self.last_h
 
 
 class UiGame:
@@ -148,13 +157,16 @@ class UiGame:
 
     def draw(self, to_dr=()):
         self.bord.draw(*self.dr_inf, self.color)
-
         for j in to_dr:
             i = j[0]
             pos = i[1] * self.b_inf[2] + self.b_inf[0], \
                   i[0] * self.b_inf[2] + self.b_inf[1]
+
+            if self.players[self.color].__class__ == PlayerAi:
+                pos = pos[::-1]
+                print(pos)
             s = pg.Surface((self.b_inf[2], self.b_inf[2]))
-            s.set_alpha(150)
+            s.set_alpha(150 if self.players[self.color].__class__ == PlayerP else 1)
             s.fill(j[1])
             sc.blit(s, pos)
 
@@ -163,11 +175,13 @@ class UiGame:
     def do_game(self):
         p = self.players[self.color]
         # print(p.select_pos)
-        self.draw(p.draw())
+        # tdr = []
         if p.__class__ == PlayerP:
             r = p.get_step(self.click_pos)
         elif p.__class__ == PlayerAi:
             r = p.get_step(self.players[-self.color])
+            self.tdr = p.draw()
+        self.draw(p.draw() + self.tdr)
         # print(r)
         if r:
             if r == 'end' or self.bord.n_step >= 500:
@@ -232,7 +246,7 @@ clock = pg.time.Clock()
 font = pg.font.Font(None, 24)
 font2 = pg.font.Font(None, 48)
 
-pl = (PlayerAi, PlayerAi)
+pl = (PlayerAi, PlayerP)
 
 game = UiGame(sc, font, *bord_pos, fig_sz, pl)
 
