@@ -79,14 +79,14 @@ class PlayerP(Player):
     def draw(self):
         ret = []
         if self.select_pos is not None:
-            ret += [(self.select_pos[::-1], yellow)]
+            ret += [(self.select_pos[::-1], yellow, 150)]
 
             for i in self.bord.grid[self.select_pos[1]][self.select_pos[0]].go_pos(self.bord):
                 if self.bord.grid[i[0]][i[1]].__class__ == EmptyF:
                     c = lime
                 else:
                     c = red
-                ret += [(i, c)]
+                ret += [(i, c, 150)]
         return ret
 
     def click(self, x, y):
@@ -132,7 +132,7 @@ class PlayerAi(Player):
 
         ret = sorted(hods, key=lambda x: -x[1])
         if ret:
-            self.last_h = [(ret[0][0][0][::-1], blue), (ret[0][0][1][::-1], blue)]
+            self.last_h = [(ret[0][0][0][::-1], blue, 70), (ret[0][0][1][::-1], blue, 70)]
             return ret[0][0]
         return 'end'
 
@@ -164,9 +164,8 @@ class UiGame:
 
             if self.players[self.color].__class__ == PlayerAi:
                 pos = pos[::-1]
-                print(pos)
             s = pg.Surface((self.b_inf[2], self.b_inf[2]))
-            s.set_alpha(150 if self.players[self.color].__class__ == PlayerP else 1)
+            s.set_alpha(j[2])
             s.fill(j[1])
             sc.blit(s, pos)
 
