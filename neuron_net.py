@@ -1,3 +1,5 @@
+from pprint import pprint
+
 import numpy as np
 
 
@@ -23,9 +25,19 @@ class NeuronNet:
         return n
 
     def print(self):
-        print(*self.weights, sep='\n\n')
+        pprint(self.weights)
         print('\n\n' + '-' * 100 + '\n\n')
-        print(*self.biases, sep='\n\n')
+        pprint(self.biases)
+
+    def write(self):
+        st = ''
+        st += '\n\n'.join(['\n'.join([str(' '.join([str(h) for h in j])) for j in i]) for i in self.weights])
+        st += '\n\n\n'
+        b = [[str(j[0]) for j in i] for i in self.biases]
+        for bb in range(len(b)):
+            st += ' '.join([str(i) for i in b[bb]])
+            st += '\n'
+        return st
 
     def net(self):
         return self.biases, self.weights
@@ -34,8 +46,9 @@ class NeuronNet:
 if __name__ == '__main__':
     net = NeuronNet((2, 3, 3, 10))
     # print(*net.predict((.01, .01)), sep='\n')
-    with open('net.txt', 'w') as f:
-        f.write(str(net.net()))
+    with open('net.net', 'w') as f:
+        f.write(net.write())
+    net.print()
 
 
 
