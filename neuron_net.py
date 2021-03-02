@@ -1,5 +1,5 @@
 from pprint import pprint
-
+from copy import deepcopy
 import numpy as np
 
 
@@ -18,15 +18,9 @@ class NeuronNet:
     def activation(x):
         return 1 / (1 + np.exp(-x))
 
-    @classmethod
-    def open(cls, wb):
-        n = cls()
-        n.biases, n.weights = wb
-        return n
-
     def print(self):
         pprint(self.weights)
-        print('\n\n' + '-' * 100 + '\n\n')
+        print('\n\n' + '-' * 20 + '\n\n')
         pprint(self.biases)
 
     def write(self):
@@ -39,16 +33,32 @@ class NeuronNet:
             st += '\n'
         return st
 
-    def net(self):
-        return self.biases, self.weights
+    @classmethod
+    def read(cls, _r):
+        _net = cls()
+        wb = _r[:-1].split('\n\n\n')
+        b = []
+        for i in wb[1].split('\n'):
+            b += [np.array([[float(j)] for j in i.split()])]
+        _net.biases = deepcopy(b)
+        w = []
+        for i in [[i.split('\n')] for i in wb[0].split('\n\n')]:
+            w += [[]]
+            for j in range(len(i)):
+                w[-1] += [[] * j]
+                for h in i[j]:
+                    w[-1][j] += [float(g) for g in h.split()]
+        print(*w, sep='\n')
+        return _net
 
 
 if __name__ == '__main__':
     net = NeuronNet((2, 3, 3, 10))
     # print(*net.predict((.01, .01)), sep='\n')
-    with open('net.net', 'w') as f:
-        f.write(net.write())
-    net.print()
+    with open('net.net') as f:
+        net2 = NeuronNet.read(f.read())
+    # net2.print()
+    # net.print()
 
 
 
