@@ -12,7 +12,9 @@ class NeuronNet:
     def predict(self, a):
         for w, b in zip(self.weights, self.biases):
             a = self.activation(np.matmul(w, a) + b)
-        return [self.activation(sum(i)) for i in a]
+        # return a
+        return [sum(i)**1000 for i in a]
+        # return [self.activation(sum(i)) for i in a]
 
     @staticmethod
     def activation(x):
@@ -57,14 +59,16 @@ if __name__ == '__main__':
     net = NeuronNet((2, 3, 3, 10))
     # print(*net.predict((.01, .01)), sep='\n')
 
-    with open('net.net', 'w') as f:
-        f.write(net.write())
+    # with open('net.net', 'w') as f:
+    #     f.write(net.write())
 
     with open('net.net') as f:
         net2 = NeuronNet.read(f.read())
 
-    net.print()
-    net2.print()
+    a = [99.0, -9.0]
+
+    # print(net.predict(a))
+    pprint(max(enumerate(net2.predict(a)), key=lambda x: x[1])[0])
 
 
 
