@@ -22,6 +22,7 @@ class NeuronNet:
         pprint(self.weights)
         print('\n\n' + '-' * 20 + '\n\n')
         pprint(self.biases)
+        print('\n' * 4)
 
     def write(self):
         st = ''
@@ -41,24 +42,29 @@ class NeuronNet:
         for i in wb[1].split('\n'):
             b += [np.array([[float(j)] for j in i.split()])]
         _net.biases = deepcopy(b)
+
         w = []
-        for i in [[i.split('\n')] for i in wb[0].split('\n\n')]:
+        for i in wb[0].split('\n\n'):
             w += [[]]
-            for j in range(len(i)):
-                w[-1] += [[] * j]
-                for h in i[j]:
-                    w[-1][j] += [float(g) for g in h.split()]
-        print(*w, sep='\n')
+            for j in i.split('\n'):
+                w[-1] += [[float(h) for h in j.split()]]
+        w = [np.array(i) for i in w]
+        _net.weights = deepcopy(w)
         return _net
 
 
 if __name__ == '__main__':
     net = NeuronNet((2, 3, 3, 10))
     # print(*net.predict((.01, .01)), sep='\n')
+
+    with open('net.net', 'w') as f:
+        f.write(net.write())
+
     with open('net.net') as f:
         net2 = NeuronNet.read(f.read())
-    # net2.print()
-    # net.print()
+
+    net.print()
+    net2.print()
 
 
 
