@@ -1,6 +1,7 @@
 from pprint import pprint
 from copy import deepcopy
 import numpy as np
+import random as rnd
 
 
 class NeuronNet:
@@ -13,7 +14,7 @@ class NeuronNet:
         for w, b in zip(self.weights, self.biases):
             a = self.activation(np.matmul(w, a) + b)
         # return a
-        return [sum(i)**1000 for i in a]
+        return [sum(i) / len(a) for i in a]
         # return [self.activation(sum(i)) for i in a]
 
     @staticmethod
@@ -56,7 +57,7 @@ class NeuronNet:
 
 
 if __name__ == '__main__':
-    net = NeuronNet((2, 3, 3, 10))
+    net = NeuronNet((4, 30, 30, 30, 30, 100))
     # print(*net.predict((.01, .01)), sep='\n')
 
     # with open('net.net', 'w') as f:
@@ -65,9 +66,9 @@ if __name__ == '__main__':
     with open('net.net') as f:
         net2 = NeuronNet.read(f.read())
 
-    a = [99.0, -9.0]
+    a = [rnd.randrange(-100_000, 100_000) / 1000 for i in range(4)]
 
-    # print(net.predict(a))
+    pprint(net2.predict(a))
     pprint(max(enumerate(net2.predict(a)), key=lambda x: x[1])[0])
 
 
