@@ -2,6 +2,7 @@ from pprint import pprint
 from copy import deepcopy
 import numpy as np
 import random as rnd
+import os
 
 
 class NeuronNet:
@@ -56,12 +57,12 @@ class NeuronNet:
         return _net
 
     @classmethod
-    def open(cls, f_name):
-        with open(f_name) as f:
+    def open(cls, f_name, dr='nets'):
+        with open(os.path.join(dr, f_name)) as f:
             return cls.read(f.read())
 
-    def save(self, f_name):
-        with open(f_name, 'w') as f:
+    def save(self, f_name, dr='nets'):
+        with open(os.path.join(dr, f_name), 'w') as f:
             f.write(self.write())
 
 

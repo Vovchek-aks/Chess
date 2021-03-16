@@ -1,8 +1,10 @@
-import pygame as pg
-from core import *
-import os
-from ui_settings import *
-from time import sleep
+if __name__ == '__main__':
+    import pygame as pg
+    import os
+    from time import sleep
+    from ui_settings import *
+
+from chess import *
 
 
 class UiBord(Bord):
@@ -206,75 +208,76 @@ def load_image(name, colorkey=None):  # загружает картинки
     return image
 
 
-pg.init()
-sc = pg.display.set_mode(size)
+if __name__ == '__main__':
+    pg.init()
+    sc = pg.display.set_mode(size)
 
-pg.display.set_caption('Chess')
+    pg.display.set_caption('Chess')
 
-FIG_IM_ST = {
-    (Pawn, 1): pg.transform.scale(load_image('f6.png'), (fig_sz, fig_sz)),
-    (Pawn, -1): pg.transform.scale(load_image('f12.png'), (fig_sz, fig_sz)),
-    (Rook, 1): pg.transform.scale(load_image('f5.png'), (fig_sz, fig_sz)),
-    (Rook, -1): pg.transform.scale(load_image('f11.png'), (fig_sz, fig_sz)),
-    (Knight, 1): pg.transform.scale(load_image('f4.png'), (fig_sz, fig_sz)),
-    (Knight, -1): pg.transform.scale(load_image('f10.png'), (fig_sz, fig_sz)),
-    (Bishop, 1): pg.transform.scale(load_image('f3.png'), (fig_sz, fig_sz)),
-    (Bishop, -1): pg.transform.scale(load_image('f9.png'), (fig_sz, fig_sz)),
-    (King, 1): pg.transform.scale(load_image('f1.png'), (fig_sz, fig_sz)),
-    (King, -1): pg.transform.scale(load_image('f7.png'), (fig_sz, fig_sz)),
-    (Queen, 1): pg.transform.scale(load_image('f2.png'), (fig_sz, fig_sz)),
-    (Queen, -1): pg.transform.scale(load_image('f8.png'), (fig_sz, fig_sz))
-}
+    FIG_IM_ST = {
+        (Pawn, 1): pg.transform.scale(load_image('f6.png'), (fig_sz, fig_sz)),
+        (Pawn, -1): pg.transform.scale(load_image('f12.png'), (fig_sz, fig_sz)),
+        (Rook, 1): pg.transform.scale(load_image('f5.png'), (fig_sz, fig_sz)),
+        (Rook, -1): pg.transform.scale(load_image('f11.png'), (fig_sz, fig_sz)),
+        (Knight, 1): pg.transform.scale(load_image('f4.png'), (fig_sz, fig_sz)),
+        (Knight, -1): pg.transform.scale(load_image('f10.png'), (fig_sz, fig_sz)),
+        (Bishop, 1): pg.transform.scale(load_image('f3.png'), (fig_sz, fig_sz)),
+        (Bishop, -1): pg.transform.scale(load_image('f9.png'), (fig_sz, fig_sz)),
+        (King, 1): pg.transform.scale(load_image('f1.png'), (fig_sz, fig_sz)),
+        (King, -1): pg.transform.scale(load_image('f7.png'), (fig_sz, fig_sz)),
+        (Queen, 1): pg.transform.scale(load_image('f2.png'), (fig_sz, fig_sz)),
+        (Queen, -1): pg.transform.scale(load_image('f8.png'), (fig_sz, fig_sz))
+    }
 
-clock = pg.time.Clock()
+    clock = pg.time.Clock()
 
-font = pg.font.Font(None, 24)
-font2 = pg.font.Font(None, 48)
+    font = pg.font.Font(None, 24)
+    font2 = pg.font.Font(None, 48)
 
-pl = (PlayerAi, PlayerAi)
+    pl = (PlayerAi, PlayerAi)
 
-game = UiGame(sc, font, *bord_pos, fig_sz, pl)
+    game = UiGame(sc, font, *bord_pos, fig_sz, pl)
 
-while True:
-    sc.fill(gray)
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
-            exit(0)
-        elif event.type == pg.MOUSEBUTTONDOWN:
-            game.click(event.pos)
-        elif event.type == pg.KEYDOWN:
-            if event.key == pg.K_SPACE:
-                f = True
-                while f:
+    while True:
+        sc.fill(gray)
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                exit(0)
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                game.click(event.pos)
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_SPACE:
+                    f = True
+                    while f:
+                        for event in pg.event.get():
+                            if event.type == pg.QUIT:
+                                exit(0)
+                            elif event.type == pg.KEYDOWN:
+                                if event.key == pg.K_SPACE:
+                                    f = False
+
+        # sc.blit(font.render(str(round(clock.get_fps())), False, red), (width - 50, 30))
+
+        if game.do_game():
+            t = f'Победил {"белый" if game.color == 1 else "чёрный"}'
+            color = white if game.color == 1 else black
+            sc.blit(font2.render(t, False, color), (width - font2.size(t)[0] - 50,
+                                                    height - font2.size(t)[1] - 10))
+            pg.display.flip()
+            f = True
+            while f:
+                if False:
                     for event in pg.event.get():
                         if event.type == pg.QUIT:
                             exit(0)
-                        elif event.type == pg.KEYDOWN:
-                            if event.key == pg.K_SPACE:
-                                f = False
+                        elif event.type == pg.MOUSEBUTTONDOWN:
+                            f = False
+                            break
+                else:
+                    sleep(1)
+                    break
 
-    # sc.blit(font.render(str(round(clock.get_fps())), False, red), (width - 50, 30))
+            game = UiGame(sc, font, *bord_pos, fig_sz, pl)
 
-    if game.do_game():
-        t = f'Победил {"белый" if game.color == 1 else "чёрный"}'
-        color = white if game.color == 1 else black
-        sc.blit(font2.render(t, False, color), (width - font2.size(t)[0] - 50,
-                                                height - font2.size(t)[1] - 10))
-        pg.display.flip()
-        f = True
-        while f:
-            if False:
-                for event in pg.event.get():
-                    if event.type == pg.QUIT:
-                        exit(0)
-                    elif event.type == pg.MOUSEBUTTONDOWN:
-                        f = False
-                        break
-            else:
-                sleep(1)
-                break
-
-        game = UiGame(sc, font, *bord_pos, fig_sz, pl)
-
-    # pg.display.flip()
-    clock.tick(FPS)
+        # pg.display.flip()
+        clock.tick(FPS)
