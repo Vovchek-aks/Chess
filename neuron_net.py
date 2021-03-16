@@ -14,7 +14,7 @@ class NeuronNet:
         for w, b in zip(self.weights, self.biases):
             a = self.activation(np.matmul(w, a) + b)
         # return a
-        return [sum(i) / len(a) for i in a]
+        return [self.activation(sum(i) / len(a)) for i in a]
         # return [self.activation(sum(i)) for i in a]
 
     @staticmethod
@@ -55,18 +55,20 @@ class NeuronNet:
         _net.weights = deepcopy(w)
         return _net
 
+    @classmethod
+    def open(cls, f_name):
+        with open(f_name) as f:
+            return cls.read(f.read())
+
+    def save(self, f_name):
+        with open(f_name, 'w') as f:
+            f.write(self.write())
+
 
 if __name__ == '__main__':
-    net = NeuronNet((4, 30, 30, 30, 30, 100))
-    # print(*net.predict((.01, .01)), sep='\n')
+    net2 = NeuronNet.open('net.net')
 
-    # with open('net.net', 'w') as f:
-    #     f.write(net.write())
-
-    with open('net.net') as f:
-        net2 = NeuronNet.read(f.read())
-
-    a = [rnd.randrange(-100_000, 100_000) / 1000 for i in range(4)]
+    a = [0, 0]
 
     pprint(net2.predict(a))
     pprint(max(enumerate(net2.predict(a)), key=lambda x: x[1])[0])
