@@ -65,14 +65,31 @@ class NeuronNet:
         with open(os.path.join(dr, f_name), 'w') as f:
             f.write(self.write())
 
+    def change(self, n=100):
+        for i in range(n):
+            if rnd.randint(0, 1):
+                x = rnd.randint(0, len(self.weights) - 1)
+                y = rnd.randint(0, len(self.weights[x]) - 1)
+                z = rnd.randint(0, len(self.weights[x][y]) - 1)
+
+                self.weights[x][y][z] = rnd.randint(-1000_000, 1000_000) / 1000_000
+            else:
+                x = rnd.randint(0, len(self.biases) - 1)
+                y = rnd.randint(0, len(self.biases[x]) - 1)
+                z = rnd.randint(0, len(self.biases[x][y]) - 1)
+
+                self.biases[x][y][z] = rnd.randint(-1000_000, 1000_000) / 1000_000
+
 
 if __name__ == '__main__':
-    net2 = NeuronNet.open('net.net')
+    net2 = NeuronNet.open('net0.net')
 
-    a = [0, 0]
+    # a = [0, 0]
+    #
+    # pprint(net2.predict(a))
+    # pprint(max(enumerate(net2.predict(a)), key=lambda x: x[1])[0])
 
-    pprint(net2.predict(a))
-    pprint(max(enumerate(net2.predict(a)), key=lambda x: x[1])[0])
+    net2.change()
 
 
 
